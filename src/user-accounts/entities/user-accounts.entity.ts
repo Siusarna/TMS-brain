@@ -3,9 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
 } from 'typeorm';
-import { User } from './user.entity';
 
 @Entity()
 export class UserAccounts {
@@ -22,9 +20,6 @@ export class UserAccounts {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
-  user: User;
-
   @Column()
   userId: number;
 
@@ -36,6 +31,9 @@ export class UserAccounts {
 
   @Column({ nullable: true })
   token: string;
+
+  @Column({ nullable: true })
+  licenceNumber: string;
 
   @Column({ default: false })
   isDeleted: boolean;
