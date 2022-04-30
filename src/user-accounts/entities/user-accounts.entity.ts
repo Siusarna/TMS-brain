@@ -4,16 +4,25 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Carriers } from '../types/carriers.type';
 
 @Entity()
 export class UserAccounts {
   constructor(data?: {
-    email: string;
-    password: string;
-    passwordVersion: string;
-    iv: string;
+    userId: number;
+    login?: string;
+    password?: string;
+    token?: string;
+    licenseNumber?: string;
+    carrier: Carriers;
   }) {
     if (data) {
+      this.userId = data.userId;
+      this.login = data.login;
+      this.password = data.password;
+      this.token = data.token;
+      this.licenceNumber = data.licenseNumber;
+      this.carrier = data.carrier;
     }
   }
 
@@ -22,6 +31,9 @@ export class UserAccounts {
 
   @Column()
   userId: number;
+
+  @Column()
+  carrier: Carriers;
 
   @Column({ nullable: true })
   login: string;
