@@ -3,10 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dbConfig } from './config';
-import { UserSettingsModule } from './user-settings/user-settings.module';
+import { UserAccountsModule } from './user-accounts/user-accounts.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(dbConfig), UserSettingsModule],
+  imports: [TypeOrmModule.forRoot(dbConfig), UserAccountsModule, CommonModule],
   controllers: [AppController],
   providers: [AppService],
 })
