@@ -1,4 +1,4 @@
-import { IsEnum, IsString, ValidateIf } from 'class-validator';
+import { IsEnum, IsString, IsUrl, ValidateIf } from 'class-validator';
 import { Carriers } from '../types/carriers.type';
 
 export class AddAccountDto {
@@ -20,4 +20,11 @@ export class AddAccountDto {
 
   @IsEnum(Carriers)
   carrier: Carriers;
+
+  @IsUrl({
+    require_valid_protocol: true,
+    require_tld: false,
+  })
+  @ValidateIf((object, value) => value !== undefined)
+  webHookUrl: string;
 }

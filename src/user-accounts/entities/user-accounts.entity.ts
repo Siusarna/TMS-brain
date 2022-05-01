@@ -16,6 +16,7 @@ export class UserAccounts {
     password?: string;
     token?: string;
     licenseNumber?: string;
+    webHookUrl?: string;
     carrier: Carriers;
   }) {
     if (data) {
@@ -24,6 +25,7 @@ export class UserAccounts {
       this.password = data.password;
       this.token = data.token;
       this.licenceNumber = data.licenseNumber;
+      this.webHookUrl = data.webHookUrl;
       this.carrier = data.carrier;
     }
   }
@@ -48,6 +50,9 @@ export class UserAccounts {
 
   @Column({ nullable: true })
   licenceNumber: string;
+
+  @Column({ nullable: true })
+  webHookUrl: string;
 
   @Column({ default: false })
   isDeleted: boolean;
