@@ -16,14 +16,14 @@ export class ValidationUserAccountPipe implements PipeTransform {
             'Login and password is required for DHL carrier',
           );
         }
-        break;
+        return value;
       case Carriers.UPS:
         if (!value.login || !value.password || !value.licenseNumber) {
           throw new UnprocessableEntityException(
             'Login, password and licenseNumber is required for UPS carrier',
           );
         }
-        break;
+        return value;
       default:
         return value;
     }

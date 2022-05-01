@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { UserAccounts } from './entities/user-accounts.entity';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { AddAccountDto } from './dtos/add-account.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Carriers } from './types/carriers.type';
 
 @Injectable()
 export class UserAccountsService {
@@ -11,11 +16,61 @@ export class UserAccountsService {
     private usersAccountsRepository: Repository<UserAccounts>,
   ) {}
 
-  addUserAccount(userId: number, account: AddAccountDto) {
+  private async findUserAccount(userId: number, carrier: Carriers) {
+    const userAccounts = await this.usersAccountsRepository.findOne({
+      userId,
+      carrier,
+      isDeleted: false,
+    });
+    if (!userAccounts) {
+      throw new NotFoundException(
+        `This user doesn't have account for ${carrier} carrier`,
+      );
+    }
+    return userAccounts;
+  }
+
+  async addUserAccount(
+    userId: number,
+    account: AddAccountDto,
+  ): Promise<UserAccounts> {
     const userAccount = new UserAccounts({
       userId,
       ...account,
     });
-    return this.usersAccountsRepository.save(userAccount);
+    try {
+      return await this.usersAccountsRepository.save(userAccount);
+    } catch (e: unknown) {
+      if (e instanceof QueryFailedError) {
+        throw new UnprocessableEntityException(
+          `This user already has account for ${account.carrier} carrier`,
+        );
+      }
+      throw e;
+    }
+  }
+
+  async updateUserAccount(
+    userId: number,
+    { carrier, ...credential }: AddAccountDto,
+  ): Promise<UserAccounts> {
+    const userAccounts = await this.findUserAccount(userId, carrier);
+    return this.usersAccountsRepository.save({
+      ...userAccounts,
+      ...credential,
+    });
+  }
+
+  async deleteUserAccount(userId: number, carrier: Carriers): Promise<void> {
+    const userAccounts = await this.findUserAccount(userId, carrier);
+    await this.usersAccountsRepository.save({
+      ...userAccounts,
+      isDeleted: true,
+    });
+    return;
+  }
+
+  getAllUserAccounts(userId: number): Promise<UserAccounts[]> {
+    return this.usersAccountsRepository.find({ userId, isDeleted: false });
   }
 }

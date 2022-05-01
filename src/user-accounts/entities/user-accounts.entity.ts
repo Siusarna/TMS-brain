@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Carriers } from '../types/carriers.type';
 
 @Entity()
+@Index(['userId', 'carrier'], { unique: true, where: 'is_deleted = false' })
 export class UserAccounts {
   constructor(data?: {
     userId: number;
