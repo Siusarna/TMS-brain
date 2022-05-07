@@ -15,7 +15,7 @@ import { AddAccountDto } from './dtos/add-account.dto';
 import { AuthGuard } from '../guards/auth.guard';
 import { UserAccountsService } from './user-accounts.service';
 import { ValidationUserAccountPipe } from '../pipes/validation-user-account.pipe';
-import { Carriers } from './types/carriers.type';
+import { Carriers } from '../constants/carriers.constants';
 
 @Controller('user-accounts')
 export class UserAccountsController {

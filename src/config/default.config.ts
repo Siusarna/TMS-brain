@@ -7,6 +7,7 @@ dotenv.config({ path: dotenv_path });
 
 const DefaultConfig = {
   authUrl: process.env.AUTH_URL,
+  dhlUrl: process.env.DHL_URL,
   port: process.env.PORT || 3001,
   httpTimeout: 5000,
 };

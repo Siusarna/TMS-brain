@@ -7,7 +7,7 @@ import { UserAccounts } from './entities/user-accounts.entity';
 import { QueryFailedError, Repository } from 'typeorm';
 import { AddAccountDto } from './dtos/add-account.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Carriers } from './types/carriers.type';
+import { Carriers } from '../constants/carriers.constants';
 
 @Injectable()
 export class UserAccountsService {
@@ -16,7 +16,7 @@ export class UserAccountsService {
     private usersAccountsRepository: Repository<UserAccounts>,
   ) {}
 
-  private async findUserAccount(userId: number, carrier: Carriers) {
+  async findUserAccount(userId: number, carrier: Carriers): Promise<UserAccounts> {
     const userAccounts = await this.usersAccountsRepository.findOne({
       userId,
       carrier,

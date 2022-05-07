@@ -5,7 +5,7 @@ import {
   Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Carriers } from '../types/carriers.type';
+import { Carriers } from '../../constants/carriers.constants';
 
 @Entity()
 @Index(['userId', 'carrier'], { unique: true, where: 'is_deleted = false' })
@@ -50,6 +50,9 @@ export class UserAccounts {
 
   @Column({ nullable: true })
   licenceNumber: string;
+
+  @Column({ nullable: true })
+  shipmentNumber: string;
 
   @Column({ nullable: true })
   webHookUrl: string;

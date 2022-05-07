@@ -4,7 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { AddAccountDto } from '../user-accounts/dtos/add-account.dto';
-import { Carriers } from '../user-accounts/types/carriers.type';
+import { Carriers } from '../constants/carriers.constants';
 
 @Injectable()
 export class ValidationUserAccountPipe implements PipeTransform {
