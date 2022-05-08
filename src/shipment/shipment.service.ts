@@ -99,7 +99,14 @@ export class ShipmentService {
     });
   }
 
-  async createShipment(userId: number, data: CreateShipmentDto) {
+  async getShipments(userId: number): Promise<Shipment[]> {
+    return this.shipmentRepository.find({ userId });
+  }
+
+  async createShipment(
+    userId: number,
+    data: CreateShipmentDto,
+  ): Promise<Shipment> {
     const userAccount = await this.userAccountsService.findUserAccount(
       userId,
       data.carrier,
@@ -139,9 +146,11 @@ export class ShipmentService {
       response.documents,
     );
 
-    return await this.shipmentRepository.update(shipment.id, {
-      items,
-      documents,
-    });
+    return await this.shipmentRepository
+      .update(shipment.id, {
+        items,
+        documents,
+      })
+      .then((res) => res.raw);
   }
 }

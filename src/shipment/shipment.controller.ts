@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   Request,
   UseGuards,
@@ -19,5 +20,12 @@ export class ShipmentController {
   @UseGuards(AuthGuard)
   createShipment(@Request() req, @Body() data: CreateShipmentDto) {
     return this.shipmentService.createShipment(req.user.id, data);
+  }
+
+  @Version('1')
+  @Get()
+  @UseGuards(AuthGuard)
+  getShipment(@Request() req) {
+    return this.shipmentService.getShipments(req.user.id);
   }
 }

@@ -17,7 +17,7 @@ import { Type } from 'class-transformer';
 import { DimensionUnits, WeightUnits } from '../types/units.type';
 import { ExportReasonType, Incoterm } from '../types/request.type';
 import { Carriers } from '../../constants/carriers.constants';
-import { ServiceType } from '../../constants/service-type.constants';
+import { Services, ServiceType } from '../../constants/service-type.constants';
 
 export class ItemDto {
   @IsString()
@@ -95,7 +95,7 @@ export class CreateShipmentDto {
   @ValidateIf((object, value) => value !== undefined)
   carrier?: Carriers;
 
-  @IsIn(Object.keys(ServiceType))
+  @IsIn(Object.keys(Services))
   @ValidateIf((object, value) => value !== undefined)
   serviceType?: keyof ServiceType;
 
