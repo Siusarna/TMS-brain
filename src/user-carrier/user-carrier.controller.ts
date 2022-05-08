@@ -7,12 +7,14 @@ import {
   Query,
   Request,
   UseGuards,
+  ValidationPipe,
   Version,
 } from '@nestjs/common';
 import { AuthGuard } from '../guards/auth.guard';
 import { AddCarrierDto } from './dtos/add-carrier.dto';
 import { UserCarrierService } from './user-carrier.service';
 import { Carriers } from '../constants/carriers.constants';
+import { CarrierDto } from './dtos/carrier.dto';
 
 @Controller('user-carrier')
 export class UserCarrierController {
@@ -33,9 +35,25 @@ export class UserCarrierController {
   }
 
   @Version('1')
-  @Delete()
+  @Get()
   @UseGuards(AuthGuard)
   getCarriers(@Request() req) {
     return this.userCarrierService.getUserCarriers(req.user.id);
+  }
+
+  @Version('1')
+  @Get('services')
+  @UseGuards(AuthGuard)
+  getServicesByCarrier(
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        transformOptions: { enableImplicitConversion: true },
+        forbidNonWhitelisted: true,
+      }),
+    )
+    data: CarrierDto,
+  ) {
+    return this.userCarrierService.getServicesByCarrier(data.carrier);
   }
 }

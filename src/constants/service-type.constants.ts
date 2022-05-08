@@ -1,5 +1,4 @@
-export enum ServiceType {
-  // DHL
+export enum DhlServiceType {
   MOTHER = 'Mother',
   BBX = 'BBX',
   WPX = 'WPX',
@@ -16,8 +15,9 @@ export enum ServiceType {
   TDY = 'TDY',
   CMX = 'CMX',
   WMX = 'WMX',
+}
 
-  //UPS
+export enum UpsServiceType {
   Next_Day_Air = '01',
   Second_Day_Air = '02', // 2nd Day Air
   Ground = '03',
@@ -48,3 +48,10 @@ export enum ServiceType {
   UPS_Today_Express_Saver = '86',
   UPS_Worldwide_Express_Freight = '96',
 }
+
+export const Services = {
+  ...DhlServiceType,
+  ...UpsServiceType,
+};
+
+export type ServiceType = DhlServiceType & UpsServiceType;

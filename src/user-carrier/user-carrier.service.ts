@@ -4,6 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { AddCarrierDto } from './dtos/add-carrier.dto';
+import {
+  DhlServiceType,
+  UpsServiceType,
+} from '../constants/service-type.constants';
 
 @Injectable()
 export class UserCarrierService {
@@ -34,5 +38,14 @@ export class UserCarrierService {
 
   getUserCarriers(userId: number): Promise<UserCarrier[]> {
     return this.userCarrierRepository.find({ userId });
+  }
+
+  getServicesByCarrier(carrier: Carriers): string[] {
+    switch (carrier) {
+      case Carriers.DHL:
+        return Object.keys(DhlServiceType);
+      case Carriers.UPS:
+        return Object.keys(UpsServiceType);
+    }
   }
 }
