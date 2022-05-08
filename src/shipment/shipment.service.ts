@@ -37,6 +37,5 @@ export class ShipmentService {
       data.carrier,
       userAccount,
     );
-
   }
 }

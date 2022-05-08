@@ -8,7 +8,12 @@ import { CommonModule } from './common/common.module';
 import { ShipmentModule } from './shipment/shipment.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(dbConfig), UserAccountsModule, CommonModule, ShipmentModule],
+  imports: [
+    TypeOrmModule.forRoot(dbConfig),
+    UserAccountsModule,
+    CommonModule,
+    ShipmentModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

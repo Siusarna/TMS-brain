@@ -16,7 +16,10 @@ export class UserAccountsService {
     private usersAccountsRepository: Repository<UserAccounts>,
   ) {}
 
-  async findUserAccount(userId: number, carrier: Carriers): Promise<UserAccounts> {
+  async findUserAccount(
+    userId: number,
+    carrier: Carriers,
+  ): Promise<UserAccounts> {
     const userAccounts = await this.usersAccountsRepository.findOne({
       userId,
       carrier,
