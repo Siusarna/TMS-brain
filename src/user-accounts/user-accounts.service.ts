@@ -8,6 +8,10 @@ import { QueryFailedError, Repository } from 'typeorm';
 import { AddAccountDto } from './dtos/add-account.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Carriers } from '../constants/carriers.constants';
+import {
+  DhlServiceType,
+  UpsServiceType,
+} from '../constants/service-type.constants';
 
 @Injectable()
 export class UserAccountsService {
@@ -73,7 +77,45 @@ export class UserAccountsService {
     return;
   }
 
-  getAllUserAccounts(userId: number): Promise<UserAccounts[]> {
-    return this.usersAccountsRepository.find({ userId, isDeleted: false });
+  getUserAccounts(
+    userId: number,
+    additionalParams: Partial<UserAccounts>,
+  ): Promise<UserAccounts[]> {
+    return this.usersAccountsRepository.find({
+      userId,
+      isDeleted: false,
+      ...additionalParams,
+    });
+  }
+
+  async activateAccount(
+    userId: number,
+    carrier: Carriers,
+  ): Promise<UserAccounts> {
+    const userAccount = await this.findUserAccount(userId, carrier);
+    return this.usersAccountsRepository.save({
+      ...userAccount,
+      isActivated: true,
+    });
+  }
+
+  async deactivateAccount(
+    userId: number,
+    carrier: Carriers,
+  ): Promise<UserAccounts> {
+    const userAccount = await this.findUserAccount(userId, carrier);
+    return this.usersAccountsRepository.save({
+      ...userAccount,
+      isActivated: false,
+    });
+  }
+
+  getServicesByCarrier(carrier: Carriers): string[] {
+    switch (carrier) {
+      case Carriers.DHL:
+        return Object.keys(DhlServiceType);
+      case Carriers.UPS:
+        return Object.keys(UpsServiceType);
+    }
   }
 }
