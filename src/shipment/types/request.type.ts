@@ -57,15 +57,15 @@ export class AddressDto {
 }
 
 export class ShipmentRequest {
-  serviceType: keyof ServiceType;
+  serviceType?: keyof ServiceType;
 
-  login: string;
+  login?: string;
 
-  password: string;
+  password?: string;
 
-  licenseNumber: string;
+  licenseNumber?: string;
 
-  shipmentNumber: string;
+  shipmentNumber?: string;
 
   invoiceNumber: string;
 

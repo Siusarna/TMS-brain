@@ -2,6 +2,7 @@ import {
   IsArray,
   IsEmail,
   IsEnum,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsObject,
@@ -16,6 +17,7 @@ import { Type } from 'class-transformer';
 import { DimensionUnits, WeightUnits } from '../types/units.type';
 import { ExportReasonType, Incoterm } from '../types/request.type';
 import { Carriers } from '../../constants/carriers.constants';
+import { ServiceType } from '../../constants/service-type.constants';
 
 export class ItemDto {
   @IsString()
@@ -92,6 +94,10 @@ export class CreateShipmentDto {
   @IsEnum(Carriers)
   @ValidateIf((object, value) => value !== undefined)
   carrier?: Carriers;
+
+  @IsIn(Object.keys(ServiceType))
+  @ValidateIf((object, value) => value !== undefined)
+  serviceType?: keyof ServiceType;
 
   @IsString()
   @IsNotEmpty()
