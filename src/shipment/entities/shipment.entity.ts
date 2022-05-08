@@ -11,6 +11,7 @@ import { Address } from './address.entity';
 import { Item } from './item.entity';
 import { ServiceType } from '../../constants/service-type.constants';
 import { Document } from './document.entity';
+import { ShipmentStatus } from '../../constants/shipment-status.constants';
 
 @Entity()
 export class Shipment {
@@ -59,10 +60,13 @@ export class Shipment {
   trackingNumber: string;
 
   @Column()
-  serviceType: ServiceType;
+  serviceType: string;
 
   @OneToMany(() => Document, (document) => document.shipment)
   documents: Document[];
+
+  @Column({ default: ShipmentStatus.MANIFEST })
+  status: ShipmentStatus;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -58,6 +58,9 @@ export class UserAccounts {
   webHookUrl: string;
 
   @Column({ default: false })
+  isActivated: boolean;
+
+  @Column({ default: false })
   isDeleted: boolean;
 
   @CreateDateColumn()
