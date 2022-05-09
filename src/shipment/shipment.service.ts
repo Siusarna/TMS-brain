@@ -75,7 +75,14 @@ export class ShipmentService {
   }
 
   private async findTheBestCarrier(data: CreateShipmentDto): Promise<Carriers> {
-    return Carriers.DHL;
+    const carrierClients = Object.keys(Carriers).map((carrier: Carriers) =>
+      this.serviceRequestFactory.getService(carrier),
+    );
+    const responses = await Promise.all(
+      carrierClients.map(async (client) => client.rateShipment(data)),
+    );
+    responses.sort((a, b) => a.totalCharges - b.totalCharges);
+    return responses[0].carrier;
   }
 
   private async getCarrierService(
