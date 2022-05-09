@@ -3,13 +3,16 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Request,
   UseGuards,
+  ValidationPipe,
   Version,
 } from '@nestjs/common';
 import { AuthGuard } from '../guards/auth.guard';
 import { CreateShipmentDto } from './dtos/create-shipment.dto';
 import { ShipmentService } from './shipment.service';
+import { PaginationDto } from './dtos/pagination.dto';
 
 @Controller('shipment')
 export class ShipmentController {
@@ -27,5 +30,21 @@ export class ShipmentController {
   @UseGuards(AuthGuard)
   getShipment(@Request() req) {
     return this.shipmentService.getShipments(req.user.id);
+  }
+
+  @Version('1')
+  @Get('tracking')
+  @UseGuards(AuthGuard)
+  getShipmentsForTracking(
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        transformOptions: { enableImplicitConversion: true },
+        forbidNonWhitelisted: true,
+      }),
+    )
+    data: PaginationDto,
+  ) {
+    return this.shipmentService.getShipmentsForTracking(data);
   }
 }

@@ -10,9 +10,11 @@ import { Item } from './entities/item.entity';
 import { Shipment } from './entities/shipment.entity';
 import { Document } from './entities/document.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Not, Repository } from 'typeorm';
 import { ShipmentResponse } from './types/response.type';
 import { BaseRequestsService } from '../common/requests/carriers/base-requests.service';
+import { PaginationDto } from './dtos/pagination.dto';
+import { ShipmentStatus } from '../constants/shipment-status.constants';
 
 @Injectable()
 export class ShipmentService {
@@ -101,6 +103,24 @@ export class ShipmentService {
 
   async getShipments(userId: number): Promise<Shipment[]> {
     return this.shipmentRepository.find({ userId });
+  }
+
+  async getShipmentsForTracking(
+    pagination: PaginationDto,
+  ): Promise<Shipment[]> {
+    const now = new Date();
+    now.setDate(now.getDate() - 1);
+    return this.shipmentRepository.find({
+      where: {
+        status: Not(ShipmentStatus.DELIVERED),
+        updatedAt: MoreThan(now),
+      },
+      order: {
+        updatedAt: 'ASC',
+      },
+      take: pagination.limit,
+      skip: pagination.skip,
+    });
   }
 
   async createShipment(
