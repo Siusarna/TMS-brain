@@ -1,7 +1,7 @@
 import { ServiceType } from '../../constants/service-type.constants';
 import { Carriers } from '../../constants/carriers.constants';
 
-export class ShipmentResponse {
+export interface ShipmentResponse {
   documents: string | string[];
   trackingNumber: string;
   carrierResponse: object;
@@ -14,4 +14,10 @@ export interface ShipmentRateResponse {
   serviceType: ServiceType;
   carrierResponse: object;
   carrier: Carriers;
+}
+
+export interface TrackResponse {
+  status: string;
+  date_time: string;
+  location: string;
 }

@@ -2,10 +2,10 @@ import { HttpService } from '@nestjs/axios';
 import { defaultConfig } from '../../../config';
 import { lastValueFrom, map } from 'rxjs';
 import { Injectable } from '@nestjs/common';
-import { ShipmentRequest } from '../../../shipment/types/request.type';
+import { CarrierAuthInfo, ShipmentRequest } from '../../../shipment/types/request.type';
 import {
   ShipmentRateResponse,
-  ShipmentResponse,
+  ShipmentResponse, TrackResponse,
 } from '../../../shipment/types/response.type';
 import { BaseRequestsService } from './base-requests.service';
 
@@ -25,6 +25,13 @@ export class UpsRequestsService extends BaseRequestsService {
   rateShipment(data: ShipmentRequest): Promise<ShipmentRateResponse> {
     const observable = this.httpService
       .post(`${defaultConfig.dhlUrl}/shipment/rate`, data)
+      .pipe(map((response) => response.data));
+    return lastValueFrom(observable);
+  }
+
+  trackShipment(data: CarrierAuthInfo, trackingNumber: string): Promise<TrackResponse[]> {
+    const observable = this.httpService
+      .post(`${defaultConfig.dhlUrl}/shipment/${trackingNumber}`, data)
       .pipe(map((response) => response.data));
     return lastValueFrom(observable);
   }

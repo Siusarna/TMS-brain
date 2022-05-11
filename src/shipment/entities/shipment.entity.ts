@@ -66,7 +66,7 @@ export class Shipment {
   documents: Document[];
 
   @Column({ default: ShipmentStatus.MANIFEST })
-  status: ShipmentStatus;
+  status: string;
 
   @CreateDateColumn()
   createdAt: Date;

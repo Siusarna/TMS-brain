@@ -1,5 +1,6 @@
 import { DimensionUnits, WeightUnits } from './units.type';
 import { ServiceType } from '../../constants/service-type.constants';
+import { PickType } from '@nestjs/swagger';
 
 export enum ExportReasonType {
   PERMANENT = 'permanent',
@@ -82,4 +83,7 @@ export class ShipmentRequest {
   from: AddressDto;
 
   to: AddressDto;
+}
+
+export class CarrierAuthInfo extends PickType(ShipmentRequest, ['login', 'password', 'licenseNumber', 'shipmentNumber'] as const) {
 }

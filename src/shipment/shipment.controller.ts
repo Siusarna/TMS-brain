@@ -47,4 +47,15 @@ export class ShipmentController {
   ) {
     return this.shipmentService.getShipmentsForTracking(data);
   }
+
+  @Version('1')
+  @Post('tracking')
+  @UseGuards(AuthGuard)
+  trackShipment(
+    @Request() req,
+    @Query('trackingNumber')
+      trackingNumber: string,
+  ) {
+    return this.shipmentService.trackShipment(req.user.id, trackingNumber);
+  }
 }

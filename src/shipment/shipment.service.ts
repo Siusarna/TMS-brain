@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateShipmentDto } from './dtos/create-shipment.dto';
 import { UserAccountsService } from '../user-accounts/user-accounts.service';
 import { UserAccounts } from '../user-accounts/entities/user-accounts.entity';
@@ -11,10 +11,11 @@ import { Shipment } from './entities/shipment.entity';
 import { Document } from './entities/document.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Not, Repository } from 'typeorm';
-import { ShipmentResponse } from './types/response.type';
+import { ShipmentResponse, TrackResponse } from './types/response.type';
 import { BaseRequestsService } from '../common/requests/carriers/base-requests.service';
 import { PaginationDto } from './dtos/pagination.dto';
 import { ShipmentStatus } from '../constants/shipment-status.constants';
+import { CARRIER_UPDATE_MAP } from '../constants/tracking-updates-map.constants';
 
 @Injectable()
 export class ShipmentService {
@@ -29,7 +30,8 @@ export class ShipmentService {
     private itemRepository: Repository<Item>,
     @InjectRepository(Address)
     private addressRepository: Repository<Address>,
-  ) {}
+  ) {
+  }
 
   private getAuthInfoByCarrier(
     carrier: Carriers,
@@ -179,5 +181,29 @@ export class ShipmentService {
         documents,
       })
       .then((res) => res.raw);
+  }
+
+  async trackShipment(userId: number, trackingNumber: string): Promise<TrackResponse[]> {
+    const shipment = await this.shipmentRepository.findOne({
+      userId,
+      trackingNumber,
+    });
+    if (!shipment) {
+      throw new NotFoundException('Shipment with this tracking number doesnt found');
+    }
+    const userAccount = await this.userAccountsService.findUserAccount(
+      userId,
+      shipment.carrier,
+    );
+    const carrierAuthInfo = this.getAuthInfoByCarrier(
+      shipment.carrier,
+      userAccount,
+    );
+
+    const carrierClient = this.serviceRequestFactory.getService(shipment.carrier);
+    const trackUpdates = await carrierClient.trackShipment(carrierAuthInfo, trackingNumber);
+    const normalizedStatus = CARRIER_UPDATE_MAP[trackUpdates[0].status];
+    await this.shipmentRepository.update(shipment, { status: normalizedStatus });
+    return trackUpdates;
   }
 }
