@@ -16,10 +16,12 @@ import { BaseRequestsService } from '../common/requests/carriers/base-requests.s
 import { PaginationDto } from './dtos/pagination.dto';
 import { ShipmentStatus } from '../constants/shipment-status.constants';
 import { CARRIER_UPDATE_MAP } from '../constants/tracking-updates-map.constants';
+import { AwsS3Service } from '../utils/aws-s3/aws-s3.service';
 
 @Injectable()
 export class ShipmentService {
   constructor(
+    private awsS3Service: AwsS3Service,
     private userAccountsService: UserAccountsService,
     private serviceRequestFactory: ServiceRequestsFactory,
     @InjectRepository(Shipment)
@@ -56,8 +58,9 @@ export class ShipmentService {
     }
   }
 
-  private processDocument(shipmentId: number, doc: string): Promise<Document> {
-    const document = new Document({ shipmentId, documentUrl: doc });
+  private async processDocument(shipmentId: number, doc: string): Promise<Document> {
+    const uploadedFile = await this.awsS3Service.uploadFile(Buffer.from(doc), shipmentId.toString());
+    const document = new Document({ shipmentId, documentUrl: uploadedFile.Location });
     return this.documentRepository.save(document);
   }
 

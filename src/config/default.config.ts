@@ -9,6 +9,9 @@ const DefaultConfig = {
   authUrl: process.env.AUTH_URL,
   dhlUrl: process.env.DHL_URL,
   upsUrl: process.env.UPS_URL,
+  s3AccessKey: process.env.AWS_S3_ACCESS_KEY,
+  s3SecretKey: process.env.AWS_S3_KEY_SECRET,
+  s3BucketName: process.env.AWS_S3_BUCKET_NAME,
   port: process.env.PORT || 3001,
   httpTimeout: 5000,
 };
