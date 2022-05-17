@@ -25,8 +25,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       ? exception.response.data
       : exception;
 
-    console.log(exception)
-
     const responseBody = {
       statusCode: httpStatus,
       timestamp: new Date().toISOString(),
