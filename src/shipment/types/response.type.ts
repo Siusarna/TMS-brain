@@ -6,6 +6,7 @@ export interface ShipmentResponse {
   trackingNumber: string;
   carrierResponse: object;
   serviceType: ServiceType;
+  carrier: Carriers;
 }
 
 export interface ShipmentRateResponse {

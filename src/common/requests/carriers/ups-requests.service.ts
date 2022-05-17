@@ -38,7 +38,7 @@ export class UpsRequestsService extends BaseRequestsService {
     token: string,
   ): Promise<ShipmentRateResponse> {
     const observable = this.httpService
-      .post(`${defaultConfig.dhlUrl}/shipment/rate`, data, {
+      .post(`${defaultConfig.upsUrl}/shipment/rate`, data, {
         headers: {
           authorization: token,
         },
@@ -53,7 +53,7 @@ export class UpsRequestsService extends BaseRequestsService {
     token: string,
   ): Promise<TrackResponse[]> {
     const observable = this.httpService
-      .post(`${defaultConfig.dhlUrl}/shipment/${trackingNumber}`, data, {
+      .post(`${defaultConfig.upsUrl}/shipment/${trackingNumber}`, data, {
         headers: {
           authorization: token,
         },

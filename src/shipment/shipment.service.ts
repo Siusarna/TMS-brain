@@ -12,12 +12,11 @@ import { Document } from './entities/document.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Not, Repository } from 'typeorm';
 import { ShipmentResponse, TrackResponse } from './types/response.type';
-import { BaseRequestsService } from '../common/requests/carriers/base-requests.service';
 import { PaginationDto } from './dtos/pagination.dto';
 import { ShipmentStatus } from '../constants/shipment-status.constants';
 import { CARRIER_UPDATE_MAP } from '../constants/tracking-updates-map.constants';
 import { AwsS3Service } from '../utils/aws-s3/aws-s3.service';
-import {defaultConfig} from "../config";
+import { defaultConfig } from '../config';
 
 @Injectable()
 export class ShipmentService {
@@ -61,7 +60,7 @@ export class ShipmentService {
   private async processDocument(
     shipmentId: number,
     doc: string,
-    docFormat: string = defaultConfig.docFormat
+    docFormat: string = defaultConfig.docFormat,
   ): Promise<Document> {
     const uploadedFile = await this.awsS3Service.uploadFile(
       doc,
@@ -70,7 +69,7 @@ export class ShipmentService {
     const document = new Document({
       shipmentId,
       documentUrl: uploadedFile.Location,
-    })
+    });
     return this.documentRepository.save(document);
   }
 
@@ -90,37 +89,43 @@ export class ShipmentService {
   }
 
   private async findTheBestCarrier(
+    userId: number,
     data: CreateShipmentDto,
     token: string,
   ): Promise<Carriers> {
-    const carrierClients = Object.keys(Carriers).map((carrier: Carriers) =>
-      this.serviceRequestFactory.getService(carrier),
-    );
+    const userActivatedCarriers =
+      await this.userAccountsService.getUserAccounts(userId, {
+        isActivated: true,
+      });
     const responses = await Promise.all(
-      carrierClients.map(async (client) => client.rateShipment(data, token)),
+      userActivatedCarriers.map(async (userAccount) => {
+        const authInfo = this.getAuthInfoByCarrier(
+          userAccount.carrier,
+          userAccount,
+        );
+        const client = this.serviceRequestFactory.getService(
+          userAccount.carrier,
+        );
+        return client.rateShipment({ ...data, ...authInfo }, token);
+      }),
     );
+
     responses.sort((a, b) => a.totalCharges - b.totalCharges);
     return responses[0].carrier;
   }
 
-  private async getCarrierService(
-    data: CreateShipmentDto,
-    token: string,
-  ): Promise<BaseRequestsService> {
-    if (data.carrier) {
-      return this.serviceRequestFactory.getService(data.carrier);
-    } else {
-      const foundCarrier = await this.findTheBestCarrier(data, token);
-      return this.serviceRequestFactory.getService(foundCarrier);
-    }
-  }
-
   private async makeRequestToCarrier(
+    userId: number,
     data: CreateShipmentDto,
-    carrierAuthInfo: AuthInfoType,
     token: string,
   ): Promise<ShipmentResponse> {
-    const carrierClient = await this.getCarrierService(data, token);
+    const bestCarrier = data.carrier ? data.carrier : await this.findTheBestCarrier(userId, data, token);
+    const userAccount = await this.userAccountsService.findUserAccount(userId, bestCarrier);
+    const carrierAuthInfo = this.getAuthInfoByCarrier(
+        bestCarrier,
+        userAccount,
+    );
+    const carrierClient = this.serviceRequestFactory.getService(bestCarrier);
     const { carrier, ...shipmentRequest } = data;
     return carrierClient.createShipment(
       {
@@ -158,20 +163,7 @@ export class ShipmentService {
     data: CreateShipmentDto,
     token: string,
   ): Promise<Shipment> {
-    const userAccount = await this.userAccountsService.findUserAccount(
-      userId,
-      data.carrier,
-    );
-    const carrierAuthInfo = this.getAuthInfoByCarrier(
-      data.carrier,
-      userAccount,
-    );
-
-    const response = await this.makeRequestToCarrier(
-      data,
-      carrierAuthInfo,
-      token,
-    );
+    const response = await this.makeRequestToCarrier(userId, data, token);
 
     const fromAddress = await this.addressRepository.save(
       new Address(data.from),
@@ -185,7 +177,7 @@ export class ShipmentService {
         trackingNumber: response.trackingNumber,
         serviceType: response.serviceType,
         carrierResponse: response.carrierResponse,
-        carrier: data.carrier,
+        carrier: response.carrier,
       }),
     );
     const items = await Promise.all(
