@@ -33,4 +33,6 @@ export enum CARRIER_UPDATE_MAP {
   'origin scan' = ShipmentStatus.SHIPPING,
   'departed from facility' = ShipmentStatus.SHIPPING,
   'arrived at facility' = ShipmentStatus.SHIPPING,
+  'in transit to recipient' = ShipmentStatus.SHIPPING,
+  delivered = ShipmentStatus.DELIVERED,
 }
