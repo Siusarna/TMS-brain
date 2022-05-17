@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Get, Header,
+  Get,
   Post,
   Query,
   Request,
@@ -22,7 +22,11 @@ export class ShipmentController {
   @Post()
   @UseGuards(AuthGuard)
   createShipment(@Request() req, @Body() data: CreateShipmentDto) {
-    return this.shipmentService.createShipment(req.user.id, data, req.headers.authorization);
+    return this.shipmentService.createShipment(
+      req.user.id,
+      data,
+      req.headers.authorization,
+    );
   }
 
   @Version('1')
@@ -54,8 +58,12 @@ export class ShipmentController {
   trackShipment(
     @Request() req,
     @Query('trackingNumber')
-      trackingNumber: string,
+    trackingNumber: string,
   ) {
-    return this.shipmentService.trackShipment(req.user.id, trackingNumber, req.headers.authorization);
+    return this.shipmentService.trackShipment(
+      req.user.id,
+      trackingNumber,
+      req.headers.authorization,
+    );
   }
 }

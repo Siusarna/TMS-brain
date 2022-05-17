@@ -85,5 +85,9 @@ export class ShipmentRequest {
   to: AddressDto;
 }
 
-export class CarrierAuthInfo extends PickType(ShipmentRequest, ['login', 'password', 'licenseNumber', 'shipmentNumber'] as const) {
-}
+export class CarrierAuthInfo extends PickType(ShipmentRequest, [
+  'login',
+  'password',
+  'licenseNumber',
+  'shipmentNumber',
+] as const) {}

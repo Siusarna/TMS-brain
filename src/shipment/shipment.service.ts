@@ -119,12 +119,14 @@ export class ShipmentService {
     data: CreateShipmentDto,
     token: string,
   ): Promise<ShipmentResponse> {
-    const bestCarrier = data.carrier ? data.carrier : await this.findTheBestCarrier(userId, data, token);
-    const userAccount = await this.userAccountsService.findUserAccount(userId, bestCarrier);
-    const carrierAuthInfo = this.getAuthInfoByCarrier(
-        bestCarrier,
-        userAccount,
+    const bestCarrier = data.carrier
+      ? data.carrier
+      : await this.findTheBestCarrier(userId, data, token);
+    const userAccount = await this.userAccountsService.findUserAccount(
+      userId,
+      bestCarrier,
     );
+    const carrierAuthInfo = this.getAuthInfoByCarrier(bestCarrier, userAccount);
     const carrierClient = this.serviceRequestFactory.getService(bestCarrier);
     const { carrier, ...shipmentRequest } = data;
     return carrierClient.createShipment(

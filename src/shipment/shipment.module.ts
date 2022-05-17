@@ -18,5 +18,4 @@ import { AwsS3Module } from '../utils/aws-s3/aws-s3.module';
     AwsS3Module,
   ],
 })
-export class ShipmentModule {
-}
+export class ShipmentModule {}

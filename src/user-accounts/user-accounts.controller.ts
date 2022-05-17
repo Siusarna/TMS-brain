@@ -38,10 +38,7 @@ export class UserAccountsController {
   @Version('1')
   @Patch()
   @UseGuards(AuthGuard)
-  updateAccount(
-    @Request() req,
-    @Body() data: AddAccountDto,
-  ) {
+  updateAccount(@Request() req, @Body() data: AddAccountDto) {
     return this.userAccountsService.updateUserAccount(req.user.id, data);
   }
 

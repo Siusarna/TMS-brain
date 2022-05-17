@@ -7,7 +7,6 @@ import SendData = ManagedUpload.SendData;
 
 @Injectable()
 export class AwsS3Service {
-
   private readonly bucketName = defaultConfig.s3BucketName;
 
   private readonly s3 = new AWS.S3({
@@ -16,14 +15,17 @@ export class AwsS3Service {
   });
 
   async uploadFile(base64File: string, name: string): Promise<SendData> {
-    const base64Data = Buffer.from(base64File.replace(/^ ?data:image\/\w+;base64,/, ''), 'base64')
+    const base64Data = Buffer.from(
+      base64File.replace(/^ ?data:image\/\w+;base64,/, ''),
+      'base64',
+    );
     const params = {
       Bucket: this.bucketName,
       Key: `${randomUUID()}-${name}`,
       Body: base64Data,
       ACL: 'public-read',
       ContentType: 'image/jpeg',
-      ContentEncoding: 'base64'
+      ContentEncoding: 'base64',
     };
     return await this.s3.upload(params).promise();
   }

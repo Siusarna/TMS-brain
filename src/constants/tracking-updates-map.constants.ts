@@ -31,5 +31,5 @@ export enum CARRIER_UPDATE_MAP {
   'pickup scan' = ShipmentStatus.SHIPPING,
   'origin scan' = ShipmentStatus.SHIPPING,
   'departed from facility' = ShipmentStatus.SHIPPING,
-  'arrived at facility' = ShipmentStatus.SHIPPING
+  'arrived at facility' = ShipmentStatus.SHIPPING,
 }

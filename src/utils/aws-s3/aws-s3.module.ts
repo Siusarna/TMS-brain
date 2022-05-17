@@ -5,5 +5,4 @@ import { AwsS3Service } from './aws-s3.service';
   providers: [AwsS3Service],
   exports: [AwsS3Service],
 })
-export class AwsS3Module {
-}
+export class AwsS3Module {}
