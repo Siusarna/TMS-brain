@@ -2,10 +2,14 @@ import { HttpService } from '@nestjs/axios';
 import { defaultConfig } from '../../../config';
 import { lastValueFrom, map } from 'rxjs';
 import { Injectable } from '@nestjs/common';
-import { CarrierAuthInfo, ShipmentRequest } from '../../../shipment/types/request.type';
+import {
+  CarrierAuthInfo,
+  ShipmentRequest,
+} from '../../../shipment/types/request.type';
 import {
   ShipmentRateResponse,
-  ShipmentResponse, TrackResponse,
+  ShipmentResponse,
+  TrackResponse,
 } from '../../../shipment/types/response.type';
 import { BaseRequestsService } from './base-requests.service';
 
@@ -15,23 +19,45 @@ export class UpsRequestsService extends BaseRequestsService {
     super(httpService);
   }
 
-  createShipment(data: ShipmentRequest): Promise<ShipmentResponse> {
+  createShipment(
+    data: ShipmentRequest,
+    token: string,
+  ): Promise<ShipmentResponse> {
     const observable = this.httpService
-      .post(`${defaultConfig.upsUrl}/shipment`, data)
+      .post(`${defaultConfig.upsUrl}/shipment`, data, {
+        headers: {
+          authorization: token,
+        },
+      })
       .pipe(map((response) => response.data));
     return lastValueFrom(observable);
   }
 
-  rateShipment(data: ShipmentRequest): Promise<ShipmentRateResponse> {
+  rateShipment(
+    data: ShipmentRequest,
+    token: string,
+  ): Promise<ShipmentRateResponse> {
     const observable = this.httpService
-      .post(`${defaultConfig.dhlUrl}/shipment/rate`, data)
+      .post(`${defaultConfig.dhlUrl}/shipment/rate`, data, {
+        headers: {
+          authorization: token,
+        },
+      })
       .pipe(map((response) => response.data));
     return lastValueFrom(observable);
   }
 
-  trackShipment(data: CarrierAuthInfo, trackingNumber: string): Promise<TrackResponse[]> {
+  trackShipment(
+    data: CarrierAuthInfo,
+    trackingNumber: string,
+    token: string,
+  ): Promise<TrackResponse[]> {
     const observable = this.httpService
-      .post(`${defaultConfig.dhlUrl}/shipment/${trackingNumber}`, data)
+      .post(`${defaultConfig.dhlUrl}/shipment/${trackingNumber}`, data, {
+        headers: {
+          authorization: token,
+        },
+      })
       .pipe(map((response) => response.data));
     return lastValueFrom(observable);
   }

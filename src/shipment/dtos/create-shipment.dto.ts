@@ -5,7 +5,7 @@ import {
   IsIn,
   IsNotEmpty,
   IsNumber,
-  IsObject,
+  IsObject, IsOptional,
   IsPhoneNumber,
   IsPostalCode,
   IsString,
@@ -80,7 +80,7 @@ export class AddressDto {
   @MaxLength(2)
   country: string;
 
-  @IsPostalCode()
+  @IsPostalCode('any')
   postalCode: string;
 
   @IsEmail()
@@ -108,11 +108,11 @@ export class CreateShipmentDto {
   referenceNumber: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   exportReason?: string;
 
   @IsEnum(ExportReasonType)
-  @IsNotEmpty()
+  @IsOptional()
   exportType?: string;
 
   @IsEnum(Incoterm)

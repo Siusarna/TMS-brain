@@ -40,7 +40,7 @@ export class UserAccountsController {
   @UseGuards(AuthGuard)
   updateAccount(
     @Request() req,
-    @Body(ValidationUserAccountPipe) data: AddAccountDto,
+    @Body() data: AddAccountDto,
   ) {
     return this.userAccountsService.updateUserAccount(req.user.id, data);
   }

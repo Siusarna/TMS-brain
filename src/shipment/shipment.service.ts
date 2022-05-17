@@ -17,6 +17,7 @@ import { PaginationDto } from './dtos/pagination.dto';
 import { ShipmentStatus } from '../constants/shipment-status.constants';
 import { CARRIER_UPDATE_MAP } from '../constants/tracking-updates-map.constants';
 import { AwsS3Service } from '../utils/aws-s3/aws-s3.service';
+import {defaultConfig} from "../config";
 
 @Injectable()
 export class ShipmentService {
@@ -32,8 +33,7 @@ export class ShipmentService {
     private itemRepository: Repository<Item>,
     @InjectRepository(Address)
     private addressRepository: Repository<Address>,
-  ) {
-  }
+  ) {}
 
   private getAuthInfoByCarrier(
     carrier: Carriers,
@@ -58,9 +58,19 @@ export class ShipmentService {
     }
   }
 
-  private async processDocument(shipmentId: number, doc: string): Promise<Document> {
-    const uploadedFile = await this.awsS3Service.uploadFile(Buffer.from(doc), shipmentId.toString());
-    const document = new Document({ shipmentId, documentUrl: uploadedFile.Location });
+  private async processDocument(
+    shipmentId: number,
+    doc: string,
+    docFormat: string = defaultConfig.docFormat
+  ): Promise<Document> {
+    const uploadedFile = await this.awsS3Service.uploadFile(
+      doc,
+      `${shipmentId.toString()}.${docFormat.toLowerCase()}`,
+    );
+    const document = new Document({
+      shipmentId,
+      documentUrl: uploadedFile.Location,
+    })
     return this.documentRepository.save(document);
   }
 
@@ -79,12 +89,15 @@ export class ShipmentService {
     }
   }
 
-  private async findTheBestCarrier(data: CreateShipmentDto): Promise<Carriers> {
+  private async findTheBestCarrier(
+    data: CreateShipmentDto,
+    token: string,
+  ): Promise<Carriers> {
     const carrierClients = Object.keys(Carriers).map((carrier: Carriers) =>
       this.serviceRequestFactory.getService(carrier),
     );
     const responses = await Promise.all(
-      carrierClients.map(async (client) => client.rateShipment(data)),
+      carrierClients.map(async (client) => client.rateShipment(data, token)),
     );
     responses.sort((a, b) => a.totalCharges - b.totalCharges);
     return responses[0].carrier;
@@ -92,11 +105,12 @@ export class ShipmentService {
 
   private async getCarrierService(
     data: CreateShipmentDto,
+    token: string,
   ): Promise<BaseRequestsService> {
     if (data.carrier) {
       return this.serviceRequestFactory.getService(data.carrier);
     } else {
-      const foundCarrier = await this.findTheBestCarrier(data);
+      const foundCarrier = await this.findTheBestCarrier(data, token);
       return this.serviceRequestFactory.getService(foundCarrier);
     }
   }
@@ -104,13 +118,17 @@ export class ShipmentService {
   private async makeRequestToCarrier(
     data: CreateShipmentDto,
     carrierAuthInfo: AuthInfoType,
+    token: string,
   ): Promise<ShipmentResponse> {
-    const carrierClient = await this.getCarrierService(data);
+    const carrierClient = await this.getCarrierService(data, token);
     const { carrier, ...shipmentRequest } = data;
-    return carrierClient.createShipment({
-      ...shipmentRequest,
-      ...carrierAuthInfo,
-    });
+    return carrierClient.createShipment(
+      {
+        ...shipmentRequest,
+        ...carrierAuthInfo,
+      },
+      token,
+    );
   }
 
   async getShipments(userId: number): Promise<Shipment[]> {
@@ -138,6 +156,7 @@ export class ShipmentService {
   async createShipment(
     userId: number,
     data: CreateShipmentDto,
+    token: string,
   ): Promise<Shipment> {
     const userAccount = await this.userAccountsService.findUserAccount(
       userId,
@@ -148,7 +167,11 @@ export class ShipmentService {
       userAccount,
     );
 
-    const response = await this.makeRequestToCarrier(data, carrierAuthInfo);
+    const response = await this.makeRequestToCarrier(
+      data,
+      carrierAuthInfo,
+      token,
+    );
 
     const fromAddress = await this.addressRepository.save(
       new Address(data.from),
@@ -173,26 +196,28 @@ export class ShipmentService {
       ),
     );
 
-    const documents = await this.processAllDocuments(
+    shipment.documents = await this.processAllDocuments(
       shipment.id,
       response.documents,
     );
+    shipment.items = items;
 
-    return await this.shipmentRepository
-      .update(shipment.id, {
-        items,
-        documents,
-      })
-      .then((res) => res.raw);
+    return await this.shipmentRepository.save(shipment);
   }
 
-  async trackShipment(userId: number, trackingNumber: string): Promise<TrackResponse[]> {
+  async trackShipment(
+    userId: number,
+    trackingNumber: string,
+    token: string,
+  ): Promise<TrackResponse[]> {
     const shipment = await this.shipmentRepository.findOne({
       userId,
       trackingNumber,
     });
     if (!shipment) {
-      throw new NotFoundException('Shipment with this tracking number doesnt found');
+      throw new NotFoundException(
+        'Shipment with this tracking number doesnt found',
+      );
     }
     const userAccount = await this.userAccountsService.findUserAccount(
       userId,
@@ -203,10 +228,18 @@ export class ShipmentService {
       userAccount,
     );
 
-    const carrierClient = this.serviceRequestFactory.getService(shipment.carrier);
-    const trackUpdates = await carrierClient.trackShipment(carrierAuthInfo, trackingNumber);
+    const carrierClient = this.serviceRequestFactory.getService(
+      shipment.carrier,
+    );
+    const trackUpdates = await carrierClient.trackShipment(
+      carrierAuthInfo,
+      trackingNumber,
+      token,
+    );
     const normalizedStatus = CARRIER_UPDATE_MAP[trackUpdates[0].status];
-    await this.shipmentRepository.update(shipment, { status: normalizedStatus });
+    await this.shipmentRepository.update(shipment, {
+      status: normalizedStatus,
+    });
     return trackUpdates;
   }
 }

@@ -15,12 +15,15 @@ export class AwsS3Service {
     secretAccessKey: defaultConfig.s3SecretKey,
   });
 
-  async uploadFile(file: Buffer, name: string): Promise<SendData> {
+  async uploadFile(base64File: string, name: string): Promise<SendData> {
+    const base64Data = Buffer.from(base64File.replace(/^ ?data:image\/\w+;base64,/, ''), 'base64')
     const params = {
       Bucket: this.bucketName,
       Key: `${randomUUID()}-${name}`,
-      Body: file,
+      Body: base64Data,
       ACL: 'public-read',
+      ContentType: 'image/jpeg',
+      ContentEncoding: 'base64'
     };
     return await this.s3.upload(params).promise();
   }
