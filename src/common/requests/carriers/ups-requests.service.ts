@@ -51,7 +51,7 @@ export class UpsRequestsService extends BaseRequestsService {
     data: CarrierAuthInfo,
     trackingNumber: string,
     token: string,
-  ): Promise<TrackResponse[]> {
+  ): Promise<TrackResponse> {
     const observable = this.httpService
       .post(`${defaultConfig.upsUrl}/shipment/${trackingNumber}`, data, {
         headers: {

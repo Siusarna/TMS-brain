@@ -17,8 +17,14 @@ export interface ShipmentRateResponse {
   carrier: Carriers;
 }
 
-export interface TrackResponse {
+interface StandardizedTrackEventResponse {
   status: string;
-  date_time: string;
+  dateTime: string;
   location: string;
+}
+
+export interface TrackResponse {
+  carrier: string;
+  events: StandardizedTrackEventResponse[];
+  carrierResponse: object;
 }

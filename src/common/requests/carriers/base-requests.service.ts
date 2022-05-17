@@ -26,5 +26,5 @@ export abstract class BaseRequestsService {
     data: CarrierAuthInfo,
     trackingNumber: string,
     token: string,
-  ): Promise<TrackResponse[]>;
+  ): Promise<TrackResponse>;
 }

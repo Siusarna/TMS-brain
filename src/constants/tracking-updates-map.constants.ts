@@ -21,6 +21,7 @@ export enum CARRIER_UPDATE_MAP {
   'shipment picked up' = ShipmentStatus.PICKUP,
   'in transit' = ShipmentStatus.SHIPPING,
   'with delivery courier' = ShipmentStatus.SHIPPING,
+  'shipment has been delivered' = ShipmentStatus.DELIVERED,
 
   // UPS
   'manifest pickup' = ShipmentStatus.MANIFEST,

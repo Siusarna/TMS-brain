@@ -51,7 +51,7 @@ export class DhlRequestsService extends BaseRequestsService {
     data: CarrierAuthInfo,
     trackingNumber: string,
     token: string,
-  ): Promise<TrackResponse[]> {
+  ): Promise<TrackResponse> {
     const observable = this.httpService
       .post(`${defaultConfig.dhlUrl}/shipment/${trackingNumber}`, data, {
         headers: {

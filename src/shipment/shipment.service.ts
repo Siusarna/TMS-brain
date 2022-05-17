@@ -142,6 +142,15 @@ export class ShipmentService {
     return this.shipmentRepository.find({ userId });
   }
 
+  async getShipmentByTrackingNumber(trackingNumber: string): Promise<Shipment> {
+    return this.shipmentRepository.findOne({
+      where: {
+        trackingNumber
+      },
+      relations: ['from', 'to', 'items', 'documents']
+    })
+  }
+
   async getShipmentsForTracking(
     pagination: PaginationDto,
   ): Promise<Shipment[]> {
@@ -203,7 +212,7 @@ export class ShipmentService {
     userId: number,
     trackingNumber: string,
     token: string,
-  ): Promise<TrackResponse[]> {
+  ): Promise<TrackResponse> {
     const shipment = await this.shipmentRepository.findOne({
       userId,
       trackingNumber,
@@ -230,8 +239,8 @@ export class ShipmentService {
       trackingNumber,
       token,
     );
-    const normalizedStatus = CARRIER_UPDATE_MAP[trackUpdates[0].status];
-    await this.shipmentRepository.update(shipment, {
+    const normalizedStatus = CARRIER_UPDATE_MAP[trackUpdates.events[0].status];
+    await this.shipmentRepository.update(shipment.id, {
       status: normalizedStatus,
     });
     return trackUpdates;
