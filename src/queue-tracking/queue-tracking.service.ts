@@ -9,7 +9,7 @@ import { UserAccountsService } from '../user-accounts/user-accounts.service';
 import { HttpService } from '@nestjs/axios';
 
 @Injectable()
-export class QueueTrackingProvider {
+export class QueueTrackingService {
   constructor(
     private shipmentService: ShipmentService,
     private userAccountsService: UserAccountsService,

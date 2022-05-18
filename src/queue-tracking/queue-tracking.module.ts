@@ -5,10 +5,10 @@ import { SqsModule } from '@ssut/nestjs-sqs';
 import { ShipmentModule } from '../shipment/shipment.module';
 import { UserAccountsModule } from '../user-accounts/user-accounts.module';
 import { HttpModule } from '@nestjs/axios';
-import { QueueTrackingProvider } from './queue-tracking.provider';
+import { QueueTrackingService } from './queue-tracking.service';
 
 AWS.config.update({
-  region: defaultConfig.awsRegion,
+  region: defaultConfig.sqsRegion,
   accessKeyId: defaultConfig.s3AccessKey,
   secretAccessKey: defaultConfig.s3SecretKey,
 });
@@ -20,7 +20,7 @@ AWS.config.update({
         {
           name: defaultConfig.sqsQueueName,
           queueUrl: defaultConfig.sqsQueueUrl,
-          region: defaultConfig.awsRegion,
+          region: defaultConfig.sqsRegion,
         },
       ],
     }),
@@ -28,6 +28,6 @@ AWS.config.update({
     UserAccountsModule,
     HttpModule.register({ timeout: defaultConfig.httpTimeout }),
   ],
-  providers: [QueueTrackingProvider],
+  providers: [QueueTrackingService],
 })
 export class QueueTrackingModule {}

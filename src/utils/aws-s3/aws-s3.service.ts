@@ -12,6 +12,7 @@ export class AwsS3Service {
   private readonly s3 = new AWS.S3({
     accessKeyId: defaultConfig.s3AccessKey,
     secretAccessKey: defaultConfig.s3SecretKey,
+    region: defaultConfig.s3Region
   });
 
   async uploadFile(base64File: string, name: string): Promise<SendData> {
