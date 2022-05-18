@@ -11,7 +11,7 @@ import { Shipment } from './entities/shipment.entity';
 import { Document } from './entities/document.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Not, Repository } from 'typeorm';
-import { ShipmentResponse, TrackResponse } from './types/response.type';
+import {ShipmentRateResponse, ShipmentResponse, TrackResponse} from './types/response.type';
 import { PaginationDto } from './dtos/pagination.dto';
 import { ShipmentStatus } from '../constants/shipment-status.constants';
 import { CARRIER_UPDATE_MAP } from '../constants/tracking-updates-map.constants';
@@ -92,7 +92,7 @@ export class ShipmentService {
     userId: number,
     data: CreateShipmentDto,
     token: string,
-  ): Promise<Carriers> {
+  ): Promise<ShipmentRateResponse[]> {
     const userActivatedCarriers =
       await this.userAccountsService.getUserAccounts(userId, {
         isActivated: true,
@@ -111,7 +111,7 @@ export class ShipmentService {
     );
 
     responses.sort((a, b) => a.totalCharges - b.totalCharges);
-    return responses[0].carrier;
+    return responses;
   }
 
   private async makeRequestToCarrier(
@@ -121,7 +121,7 @@ export class ShipmentService {
   ): Promise<ShipmentResponse> {
     const bestCarrier = data.carrier
       ? data.carrier
-      : await this.findTheBestCarrier(userId, data, token);
+      : (await this.findTheBestCarrier(userId, data, token))[0].carrier;
     const userAccount = await this.userAccountsService.findUserAccount(
       userId,
       bestCarrier,
@@ -206,6 +206,20 @@ export class ShipmentService {
     shipment.items = items;
 
     return await this.shipmentRepository.save(shipment);
+  }
+
+  async rateShipment(
+      userId: number,
+      data: CreateShipmentDto,
+      token: string
+  ): Promise<ShipmentRateResponse[] | ShipmentRateResponse> {
+    if (data.carrier) {
+      const userAccount = await this.userAccountsService.findUserAccount(userId, data.carrier);
+      const carrierClient = this.serviceRequestFactory.getService(data.carrier);
+      const authInfo = this.getAuthInfoByCarrier(data.carrier, userAccount);
+      return carrierClient.rateShipment({ ...data, ...authInfo }, token)
+    }
+    return this.findTheBestCarrier(userId, data, token);
   }
 
   async trackShipment(

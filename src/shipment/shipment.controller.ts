@@ -30,6 +30,17 @@ export class ShipmentController {
   }
 
   @Version('1')
+  @Post('/rate')
+  @UseGuards(AuthGuard)
+  rateShipment(@Request() req, @Body() data: CreateShipmentDto) {
+    return this.shipmentService.rateShipment(
+        req.user.id,
+        data,
+        req.headers.authorization,
+    );
+  }
+
+  @Version('1')
   @Get()
   @UseGuards(AuthGuard)
   getShipments(@Request() req) {
