@@ -79,7 +79,7 @@ export class UserAccountsService {
 
   getUserAccounts(
     userId: number,
-    additionalParams: Partial<UserAccounts>,
+    additionalParams?: Partial<UserAccounts>,
   ): Promise<UserAccounts[]> {
     return this.usersAccountsRepository.find({
       userId,

@@ -30,7 +30,7 @@ export class ShipmentController {
   }
 
   @Version('1')
-  @Post('/rate')
+  @Post('rate')
   @UseGuards(AuthGuard)
   rateShipment(@Request() req, @Body() data: CreateShipmentDto) {
     return this.shipmentService.rateShipment(
@@ -45,12 +45,6 @@ export class ShipmentController {
   @UseGuards(AuthGuard)
   getShipments(@Request() req) {
     return this.shipmentService.getShipments(req.user.id);
-  }
-
-  @Version('1')
-  @Get('/:trackingNumber')
-  getShipmentByTrackingNumber(@Param('trackingNumber') trackingNumber: string) {
-    return this.shipmentService.getShipmentByTrackingNumber(trackingNumber);
   }
 
   @Version('1')
@@ -82,5 +76,11 @@ export class ShipmentController {
       trackingNumber,
       req.headers.authorization,
     );
+  }
+
+  @Version('1')
+  @Get(':trackingNumber')
+  getShipmentByTrackingNumber(@Param('trackingNumber') trackingNumber: string) {
+    return this.shipmentService.getShipmentByTrackingNumber(trackingNumber);
   }
 }

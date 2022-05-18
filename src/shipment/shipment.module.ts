@@ -17,5 +17,6 @@ import { AwsS3Module } from '../utils/aws-s3/aws-s3.module';
     TypeOrmModule.forFeature([Shipment, Address, Item, Document]),
     AwsS3Module,
   ],
+  exports: [ShipmentService]
 })
 export class ShipmentModule {}

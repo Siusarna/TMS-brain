@@ -10,8 +10,12 @@ import { Item } from './entities/item.entity';
 import { Shipment } from './entities/shipment.entity';
 import { Document } from './entities/document.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Not, Repository } from 'typeorm';
-import {ShipmentRateResponse, ShipmentResponse, TrackResponse} from './types/response.type';
+import { LessThan, Not, Repository } from 'typeorm';
+import {
+  ShipmentRateResponse,
+  ShipmentResponse,
+  TrackResponse,
+} from './types/response.type';
 import { PaginationDto } from './dtos/pagination.dto';
 import { ShipmentStatus } from '../constants/shipment-status.constants';
 import { CARRIER_UPDATE_MAP } from '../constants/tracking-updates-map.constants';
@@ -145,10 +149,10 @@ export class ShipmentService {
   async getShipmentByTrackingNumber(trackingNumber: string): Promise<Shipment> {
     return this.shipmentRepository.findOne({
       where: {
-        trackingNumber
+        trackingNumber,
       },
-      relations: ['from', 'to', 'items', 'documents']
-    })
+      relations: ['from', 'to', 'items', 'documents'],
+    });
   }
 
   async getShipmentsForTracking(
@@ -159,13 +163,14 @@ export class ShipmentService {
     return this.shipmentRepository.find({
       where: {
         status: Not(ShipmentStatus.DELIVERED),
-        updatedAt: MoreThan(now),
+        updatedAt: LessThan(now),
       },
       order: {
         updatedAt: 'ASC',
       },
       take: pagination.limit,
       skip: pagination.skip,
+      select: ['id', 'trackingNumber', 'carrier'],
     });
   }
 
@@ -209,17 +214,33 @@ export class ShipmentService {
   }
 
   async rateShipment(
-      userId: number,
-      data: CreateShipmentDto,
-      token: string
+    userId: number,
+    data: CreateShipmentDto,
+    token: string,
   ): Promise<ShipmentRateResponse[] | ShipmentRateResponse> {
     if (data.carrier) {
-      const userAccount = await this.userAccountsService.findUserAccount(userId, data.carrier);
+      const userAccount = await this.userAccountsService.findUserAccount(
+        userId,
+        data.carrier,
+      );
       const carrierClient = this.serviceRequestFactory.getService(data.carrier);
       const authInfo = this.getAuthInfoByCarrier(data.carrier, userAccount);
-      return carrierClient.rateShipment({ ...data, ...authInfo }, token)
+      return carrierClient.rateShipment({ ...data, ...authInfo }, token);
     }
     return this.findTheBestCarrier(userId, data, token);
+  }
+
+  async updateShipment(
+    filterParams: Partial<Shipment>,
+    updateData: Partial<Shipment>,
+  ): Promise<Shipment> {
+    const shipment = await this.shipmentRepository.find(filterParams);
+    if (!shipment || !shipment.length) {
+      throw new NotFoundException('Shipment with this criteria not found');
+    }
+    return (
+      await this.shipmentRepository.update({ ...filterParams }, updateData)
+    ).raw;
   }
 
   async trackShipment(
