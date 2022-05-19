@@ -9,6 +9,7 @@ const DefaultConfig = {
   authUrl: process.env.AUTH_URL,
   dhlUrl: process.env.DHL_URL,
   upsUrl: process.env.UPS_URL,
+  fedexUrl: process.env.FEDEX_URL,
 
   s3Region: process.env.AWS_S3_REGION,
   s3AccessKey: process.env.AWS_S3_ACCESS_KEY,

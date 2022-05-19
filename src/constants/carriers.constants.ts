@@ -1,7 +1,5 @@
 export enum Carriers {
-  NOVA_POSHTA = 'NOVA_POSHTA',
+  FEDEX = 'FEDEX',
   DHL = 'DHL',
   UPS = 'UPS',
-  MEEST = 'MEEST',
-  UKR_POSHTA = 'UKR_POSHTA',
 }

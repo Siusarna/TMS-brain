@@ -58,6 +58,14 @@ export class ShipmentService {
           shipmentNumber: userAccount.shipmentNumber,
         };
       }
+      case Carriers.FEDEX: {
+        return {
+          login: userAccount.login,
+          password: userAccount.password,
+          licenseNumber: userAccount.licenceNumber,
+          shipmentNumber: userAccount.shipmentNumber,
+        };
+      }
     }
   }
 
@@ -130,6 +138,7 @@ export class ShipmentService {
       userId,
       bestCarrier,
     );
+
     const carrierAuthInfo = this.getAuthInfoByCarrier(bestCarrier, userAccount);
     const carrierClient = this.serviceRequestFactory.getService(bestCarrier);
     const { carrier, ...shipmentRequest } = data;

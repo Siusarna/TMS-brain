@@ -3,6 +3,7 @@ import { Carriers } from '../../../constants/carriers.constants';
 import { UpsRequestsService } from './ups-requests.service';
 import { HttpService } from '@nestjs/axios';
 import { DhlRequestsService } from './dhl-requests.service';
+import { FedexRequestsService } from './fedex-requests.service';
 
 @Injectable()
 export class ServiceRequestsFactory {
@@ -14,6 +15,8 @@ export class ServiceRequestsFactory {
         return new UpsRequestsService(this.httpService);
       case Carriers.DHL:
         return new DhlRequestsService(this.httpService);
+      case Carriers.FEDEX:
+        return new FedexRequestsService(this.httpService);
     }
   }
 }
