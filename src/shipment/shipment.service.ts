@@ -121,7 +121,7 @@ export class ShipmentService {
         return client.rateShipment({ ...data, ...authInfo }, token);
       }),
     );
-
+    console.log(responses)
     responses.sort((a, b) => a.totalCharges - b.totalCharges);
     return responses;
   }
