@@ -13,11 +13,14 @@ import { AuthGuard } from '../guards/auth.guard';
 import { CreateShipmentDto } from './dtos/create-shipment.dto';
 import { ShipmentService } from './shipment.service';
 import { PaginationDto } from './dtos/pagination.dto';
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 
+@ApiTags('Shipment')
 @Controller('shipment')
 export class ShipmentController {
   constructor(private shipmentService: ShipmentService) {}
 
+  @ApiBearerAuth('JWT-auth')
   @Version('1')
   @Post()
   @UseGuards(AuthGuard)
@@ -29,6 +32,7 @@ export class ShipmentController {
     );
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Version('1')
   @Post('rate')
   @UseGuards(AuthGuard)
@@ -40,6 +44,7 @@ export class ShipmentController {
     );
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Version('1')
   @Get()
   @UseGuards(AuthGuard)
@@ -47,6 +52,7 @@ export class ShipmentController {
     return this.shipmentService.getShipments(req.user.id);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Version('1')
   @Get('tracking')
   @UseGuards(AuthGuard)
@@ -63,6 +69,7 @@ export class ShipmentController {
     return this.shipmentService.getShipmentsForTracking(data);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Version('1')
   @Get('tracking/:trackingNumber')
   @UseGuards(AuthGuard)

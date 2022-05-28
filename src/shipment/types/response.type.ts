@@ -24,7 +24,7 @@ interface StandardizedTrackEventResponse {
 }
 
 export interface TrackResponse {
-  carrier: string;
+  carrier: Carriers;
   events: StandardizedTrackEventResponse[];
   carrierResponse: object;
 }

@@ -1,6 +1,6 @@
-import { DimensionUnits, WeightUnits } from './units.type';
 import { ServiceType } from '../../constants/service-type.constants';
 import { PickType } from '@nestjs/swagger';
+import {AddressDto, ItemDto} from "../dtos/create-shipment.dto";
 
 export enum ExportReasonType {
   PERMANENT = 'permanent',
@@ -30,31 +30,6 @@ export enum Incoterm {
   FOB = 'FOB', // Free on Board
   CFR = 'CFR', // Cost and Freight
   CIF = 'CIF', // Cost, Insurance and Freight
-}
-
-export class ItemDto {
-  htsCode: string;
-  htsDescription: string;
-  cost: number;
-  countryOfManufacture: string;
-  weight: number;
-  width: number;
-  height: number;
-  length: number;
-  weightUnits: WeightUnits;
-  dimensionUnits: DimensionUnits;
-}
-
-export class AddressDto {
-  name: string;
-  company: string;
-  address1: string;
-  municipality: string;
-  stateOrProvince: string;
-  country: string;
-  postalCode: string;
-  email: string;
-  phone: string;
 }
 
 export class ShipmentRequest {

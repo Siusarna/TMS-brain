@@ -20,7 +20,10 @@ import { Carriers } from '../constants/carriers.constants';
 import { CarrierDto } from './dtos/carrier.dto';
 import { AddCarrierDto } from './dtos/add-carrier.dto';
 import { GetActivatedAccountsDto } from './dtos/get-activated-accounts-dto';
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 
+@ApiTags('User accounts')
+@ApiBearerAuth('JWT-auth')
 @Controller('user-accounts')
 export class UserAccountsController {
   constructor(private userAccountsService: UserAccountsService) {}
