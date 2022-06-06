@@ -54,6 +54,10 @@ jobs:
       - image: circleci/buildpack-deps:stretch
     steps:
       - setup_remote_docker
+      - checkout
+      - run:
+          name: Build docker image
+          command: docker build -t $IMAGE_NAME:$CIRCLE_SHA1 .
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
