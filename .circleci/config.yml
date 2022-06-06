@@ -45,7 +45,6 @@ jobs:
   publish-latest:
     environment:
       IMAGE_NAME: building-on-ci
-      SHORT_GIT_HASH: $(echo $CIRCLE_SHA1 | cut -c -7)
     docker:
       - image: circleci/buildpack-deps:stretch
     steps:
@@ -54,7 +53,7 @@ jobs:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            docker push $IMAGE_NAME:$SHORT_GIT_HASH
+            docker push $IMAGE_NAME:$CIRCLE_SHA1
 workflows:
   sample:
     jobs:
