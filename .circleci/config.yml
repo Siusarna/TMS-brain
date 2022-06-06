@@ -47,8 +47,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Start docker-compose and verify service(s)
-          command: |
-            docker-compose --project brain up -d
+          command: docker-compose --project brain up -d
 
 workflows:
   sample:
