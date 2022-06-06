@@ -16,7 +16,7 @@ export class QueueTrackingService {
     private httpService: HttpService,
   ) {}
 
-  @SqsMessageHandler(defaultConfig.sqsQueueName,false)
+  @SqsMessageHandler(defaultConfig.sqsQueueName, false)
   async handleTrackingMessage(message: AWS.SQS.Message) {
     const data = JSON.parse(message.Body) as TrackingMessageBodyType;
     const shipment = await this.shipmentService.getShipmentByTrackingNumber(

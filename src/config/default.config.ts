@@ -20,7 +20,6 @@ const DefaultConfig = {
   sqsQueueName: process.env.SQS_QUEUE_NAME,
   sqsQueueUrl: process.env.SQS_QUEUE_URL,
 
-
   docFormat: 'jpeg',
 
   port: process.env.PORT || 3001,

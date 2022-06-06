@@ -1,7 +1,8 @@
 import {
   Body,
   Controller,
-  Get, Param,
+  Get,
+  Param,
   Post,
   Query,
   Request,
@@ -13,7 +14,7 @@ import { AuthGuard } from '../guards/auth.guard';
 import { CreateShipmentDto } from './dtos/create-shipment.dto';
 import { ShipmentService } from './shipment.service';
 import { PaginationDto } from './dtos/pagination.dto';
-import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Shipment')
 @Controller('shipment')
@@ -38,9 +39,9 @@ export class ShipmentController {
   @UseGuards(AuthGuard)
   rateShipment(@Request() req, @Body() data: CreateShipmentDto) {
     return this.shipmentService.rateShipment(
-        req.user.id,
-        data,
-        req.headers.authorization,
+      req.user.id,
+      data,
+      req.headers.authorization,
     );
   }
 

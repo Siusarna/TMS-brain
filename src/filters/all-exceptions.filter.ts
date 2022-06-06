@@ -21,7 +21,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    console.log(exception)
+    console.log(exception);
 
     const error = exception.hasOwnProperty('response')
       ? exception.response.data

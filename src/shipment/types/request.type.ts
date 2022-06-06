@@ -1,6 +1,6 @@
 import { ServiceType } from '../../constants/service-type.constants';
 import { PickType } from '@nestjs/swagger';
-import {AddressDto, ItemDto} from "../dtos/create-shipment.dto";
+import { AddressDto, ItemDto } from '../dtos/create-shipment.dto';
 
 export enum ExportReasonType {
   PERMANENT = 'permanent',

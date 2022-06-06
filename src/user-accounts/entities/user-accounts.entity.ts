@@ -18,7 +18,7 @@ export class UserAccounts {
     licenseNumber?: string;
     webHookUrl?: string;
     carrier: Carriers;
-    shipmentNumber?: string
+    shipmentNumber?: string;
   }) {
     if (data) {
       this.userId = data.userId;
@@ -28,7 +28,7 @@ export class UserAccounts {
       this.licenceNumber = data.licenseNumber;
       this.webHookUrl = data.webHookUrl;
       this.carrier = data.carrier;
-      this.shipmentNumber = data.shipmentNumber
+      this.shipmentNumber = data.shipmentNumber;
     }
   }
 

@@ -20,7 +20,11 @@ import { Carriers } from '../constants/carriers.constants';
 import { CarrierDto } from './dtos/carrier.dto';
 import { ActivateCarrierDto } from './dtos/activate-carrier.dto';
 import { GetActivatedAccountsDto } from './dtos/get-activated-accounts-dto';
-import { ApiBearerAuth, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 
 @ApiTags('User accounts')
 @ApiBearerAuth('JWT-auth')
@@ -28,7 +32,9 @@ import { ApiBearerAuth, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/
 export class UserAccountsController {
   constructor(private userAccountsService: UserAccountsService) {}
 
-  @ApiUnprocessableEntityResponse({ description: 'This user already has account for this carrier'})
+  @ApiUnprocessableEntityResponse({
+    description: 'This user already has account for this carrier',
+  })
   @Version('1')
   @Post()
   @UseGuards(AuthGuard)
