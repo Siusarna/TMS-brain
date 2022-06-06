@@ -45,6 +45,7 @@ jobs:
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - setup_remote_docker
+      - checkout
       - run:
           name: Start docker-compose and verify service(s)
           command: |
