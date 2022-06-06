@@ -47,7 +47,13 @@ jobs:
       - setup_remote_docker
       - run:
           name: Start docker-compose and verify service(s)
-          command: docker-compose --project brain up -d
+          command: |
+            docker-compose --p brain up -d
+            docker container run --network container:brain_brain_1 \
+              docker.io/jwilder/dockerize \
+              -wait http://localhost:3001/api/health \
+              -wait-retry-interval 2s \
+              -timeout 20s
 
 workflows:
   sample:
