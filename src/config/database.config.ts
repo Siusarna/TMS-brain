@@ -4,7 +4,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 const env = process.env.NODE_ENV || 'dev';
-const dotenv_path = path.resolve(process.cwd(), `.${env}.env`);
+const dotenv_path = path.resolve(__dirname, '..', `${env}.env`);
 dotenv.config({ path: dotenv_path });
 
 const DatabaseConfig: TypeOrmModuleOptions = {

@@ -14,7 +14,7 @@ import { QueueTrackingModule } from './queue-tracking/queue-tracking.module';
     UserAccountsModule,
     CommonModule,
     ShipmentModule,
-    QueueTrackingModule,
+    // QueueTrackingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

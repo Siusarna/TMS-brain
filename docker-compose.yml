@@ -1,7 +1,27 @@
-version: '3.0'
+version: '3.9'
 
 services:
-
+  tms_main_db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - tms_main_volume:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=tms_main
+  brain:
+    build: .
+    command: npm run start:prod
+    depends_on:
+      - tms_main_db
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
   localstack:
     image: localstack/localstack:latest
     environment:
@@ -9,7 +29,9 @@ services:
       - EDGE_PORT=4566
       - SERVICES=sqs
     ports:
-      - '4566:4566'
+      - "4566:4566"
     volumes:
       - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+volumes:
+  tms_main_volume:
