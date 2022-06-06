@@ -48,7 +48,7 @@ jobs:
       - run:
           name: Start docker-compose and verify service(s)
           command: |
-            docker-compose --p brain up -d
+            docker-compose -p brain up -d
             docker container run --network container:brain_brain_1 \
               docker.io/jwilder/dockerize \
               -wait http://localhost:3001/api/health \
