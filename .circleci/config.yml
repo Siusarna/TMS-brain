@@ -33,24 +33,27 @@ jobs:
           name: Run prettier
           command: npm run prettier
   build:
-    - run:
-        name: Install Docker Compose
-        environment:
-          COMPOSE_VERSION: '3.9'
-        command: |
-          curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
-          chmod +x ~/docker-compose
-          sudo mv ~/docker-compose /usr/local/bin/docker-compose
-    - setup_remote_docker
-    - run:
-        name: Start docker-compose and verify service(s)
-        command: |
-          docker-compose --project brain up -d
-          docker container run --network container:brain_brain_1 \
-            docker.io/jwilder/dockerize \
-            -wait http://localhost:3001/api/health \
-            -wait-retry-interval 2s \
-            -timeout 20s
+    docker:
+      - image: cimg/base:2021.04
+    steps:
+      - run:
+          name: Install Docker Compose
+          environment:
+            COMPOSE_VERSION: '3.9'
+          command: |
+            curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - setup_remote_docker
+      - run:
+          name: Start docker-compose and verify service(s)
+          command: |
+            docker-compose --project brain up -d
+            docker container run --network container:brain_brain_1 \
+              docker.io/jwilder/dockerize \
+              -wait http://localhost:3001/api/health \
+              -wait-retry-interval 2s \
+              -timeout 20s
 
 workflows:
   sample:
