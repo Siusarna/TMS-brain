@@ -34,7 +34,7 @@ jobs:
           command: npm run format
   build:
     docker:
-      - image: cimg/base:2021.04
+      - image: cimg/node:16.10
     steps:
       - run:
           name: Install Docker Compose
