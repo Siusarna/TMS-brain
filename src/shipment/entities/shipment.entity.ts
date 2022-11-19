@@ -12,6 +12,7 @@ import { Item } from './item.entity';
 import { ServiceType } from '../../constants/service-type.constants';
 import { Document } from './document.entity';
 import { ShipmentStatus } from '../../constants/shipment-status.constants';
+import { UserAccounts } from '../../user-accounts/entities/user-accounts.entity';
 
 @Entity()
 export class Shipment {
@@ -64,6 +65,9 @@ export class Shipment {
 
   @OneToMany(() => Document, (document) => document.shipment)
   documents: Document[];
+
+  @ManyToOne(() => UserAccounts)
+  userAccount: UserAccounts;
 
   @Column({ default: ShipmentStatus.MANIFEST })
   status: string;
