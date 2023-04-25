@@ -37,6 +37,21 @@ export class UserAccountsService {
     return userAccounts;
   }
 
+  async findUserAccountById(
+    id: number,
+  ): Promise<UserAccounts> {
+    const userAccounts = await this.usersAccountsRepository.findOne({
+      id,
+      isDeleted: false,
+    });
+    if (!userAccounts) {
+      throw new NotFoundException(
+        `Account with id = ${id} doesn't exists`,
+      );
+    }
+    return userAccounts;
+  }
+
   async addUserAccount(
     userId: number,
     account: AddAccountDto,

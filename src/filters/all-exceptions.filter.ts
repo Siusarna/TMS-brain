@@ -24,7 +24,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     console.log(exception);
 
     const error = exception.hasOwnProperty('response')
-      ? exception.response.data
+      ? exception.response
       : exception;
 
     const responseBody = {

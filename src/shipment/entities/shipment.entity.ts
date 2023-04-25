@@ -17,30 +17,27 @@ import { UserAccounts } from '../../user-accounts/entities/user-accounts.entity'
 @Entity()
 export class Shipment {
   constructor(data?: {
-    userId: number;
     from: Address;
     to: Address;
+    userAccount: UserAccounts
     carrierResponse: object;
     trackingNumber: string;
     serviceType: ServiceType;
     carrier: Carriers;
   }) {
     if (data) {
-      this.userId = data.userId;
       this.from = data.from;
       this.to = data.to;
       this.carrierResponse = JSON.stringify(data.carrierResponse);
       this.trackingNumber = data.trackingNumber;
       this.serviceType = data.serviceType;
       this.carrier = data.carrier;
+      this.userAccount = data.userAccount;
     }
   }
 
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
-  userId: number;
 
   @Column()
   carrier: Carriers;

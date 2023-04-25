@@ -29,9 +29,8 @@ export class QueueTrackingService {
       status: normalizedStatus,
     });
 
-    const userAccount = await this.userAccountsService.findUserAccount(
-      shipment.userId,
-      shipment.carrier,
+    const userAccount = await this.userAccountsService.findUserAccountById(
+      shipment.userAccount.id,
     );
     if (userAccount.webHookUrl) {
       await this.httpService.post(userAccount.webHookUrl, {

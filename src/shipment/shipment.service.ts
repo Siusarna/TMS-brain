@@ -127,20 +127,12 @@ export class ShipmentService {
   }
 
   private async makeRequestToCarrier(
-    userId: number,
     data: CreateShipmentDto,
     token: string,
+    userAccount: UserAccounts
   ): Promise<ShipmentResponse> {
-    const bestCarrier = data.carrier
-      ? data.carrier
-      : (await this.findTheBestCarrier(userId, data, token))[0].carrier;
-    const userAccount = await this.userAccountsService.findUserAccount(
-      userId,
-      bestCarrier,
-    );
-
-    const carrierAuthInfo = this.getAuthInfoByCarrier(bestCarrier, userAccount);
-    const carrierClient = this.serviceRequestFactory.getService(bestCarrier);
+    const carrierAuthInfo = this.getAuthInfoByCarrier(userAccount.carrier, userAccount);
+    const carrierClient = this.serviceRequestFactory.getService(userAccount.carrier);
     const { carrier, ...shipmentRequest } = data;
     return carrierClient.createShipment(
       {
@@ -152,7 +144,12 @@ export class ShipmentService {
   }
 
   async getShipments(userId: number): Promise<Shipment[]> {
-    return this.shipmentRepository.find({ userId });
+    return this.shipmentRepository.find({
+      join: { alias: 'userAccount', innerJoin: { shipment: 'shipment.userAccount' } },
+      where: qb => {
+        qb.where('userAccount.userId = :userId', { userId })
+      }
+    });
   }
 
   async getShipmentByTrackingNumber(trackingNumber: string): Promise<Shipment> {
@@ -160,7 +157,7 @@ export class ShipmentService {
       where: {
         trackingNumber,
       },
-      relations: ['from', 'to', 'items', 'documents'],
+      relations: ['from', 'to', 'items', 'documents', 'userAccount'],
     });
   }
 
@@ -188,7 +185,15 @@ export class ShipmentService {
     data: CreateShipmentDto,
     token: string,
   ): Promise<Shipment> {
-    const response = await this.makeRequestToCarrier(userId, data, token);
+    const bestCarrier = data.carrier
+      ? data.carrier
+      : (await this.findTheBestCarrier(userId, data, token))[0].carrier;
+    const userAccount = await this.userAccountsService.findUserAccount(
+      userId,
+      bestCarrier,
+    );
+
+    const response = await this.makeRequestToCarrier(data, token, userAccount);
 
     const fromAddress = await this.addressRepository.save(
       new Address(data.from),
@@ -196,7 +201,7 @@ export class ShipmentService {
     const toAddress = await this.addressRepository.save(new Address(data.to));
     const shipment = await this.shipmentRepository.save(
       new Shipment({
-        userId,
+        userAccount,
         from: fromAddress,
         to: toAddress,
         trackingNumber: response.trackingNumber,
@@ -258,8 +263,10 @@ export class ShipmentService {
     token: string,
   ): Promise<TrackResponse> {
     const shipment = await this.shipmentRepository.findOne({
-      userId,
-      trackingNumber,
+      join: { alias: 'userAccount', innerJoin: { shipment: 'shipment.userAccount' } },
+      where: qb => {
+        qb.where('userAccount.userId = :userId', { userId }).andWhere({ trackingNumber })
+      }
     });
     if (!shipment) {
       throw new NotFoundException(
