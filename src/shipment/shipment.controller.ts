@@ -53,10 +53,10 @@ export class ShipmentController {
     return this.shipmentService.getShipments(req.user.id);
   }
 
-  @ApiBearerAuth('JWT-auth')
+  //@ApiBearerAuth('JWT-auth')
   @Version('1')
   @Get('tracking')
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   getShipmentsForTracking(
     @Query(
       new ValidationPipe({

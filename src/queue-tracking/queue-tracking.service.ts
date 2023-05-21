@@ -7,6 +7,7 @@ import { ShipmentService } from '../shipment/shipment.service';
 import { CARRIER_UPDATE_MAP } from '../constants/tracking-updates-map.constants';
 import { UserAccountsService } from '../user-accounts/user-accounts.service';
 import { HttpService } from '@nestjs/axios';
+import { log } from 'util';
 
 @Injectable()
 export class QueueTrackingService {
@@ -18,14 +19,15 @@ export class QueueTrackingService {
 
   @SqsMessageHandler(defaultConfig.sqsQueueName, false)
   async handleTrackingMessage(message: AWS.SQS.Message) {
+    console.log(message);
     const data = JSON.parse(message.Body) as TrackingMessageBodyType;
-    const shipment = await this.shipmentService.getShipmentByTrackingNumber(
+    const shipment = await this.shipmentService.getShipmentByTrackingNumberWithoutRelations(
       data.trackingNumber,
     );
     const normalizedStatus = CARRIER_UPDATE_MAP[data.events[0].status];
-    if (shipment.status === normalizedStatus) return;
+    if (!normalizedStatus || shipment.status === normalizedStatus) return;
 
-    const updatedShipment = this.shipmentService.updateShipment(shipment, {
+    const updatedShipment = await this.shipmentService.updateShipment({ id: shipment.id }, {
       status: normalizedStatus,
     });
 
@@ -38,5 +40,6 @@ export class QueueTrackingService {
         shipment: updatedShipment,
       });
     }
+    console.log('finish');
   }
 }

@@ -153,11 +153,20 @@ export class ShipmentService {
   }
 
   async getShipmentByTrackingNumber(trackingNumber: string): Promise<Shipment> {
-    return this.shipmentRepository.findOne({
+    return await this.shipmentRepository.findOne({
       where: {
         trackingNumber,
       },
       relations: ['from', 'to', 'items', 'documents', 'userAccount'],
+    });
+  }
+
+  async getShipmentByTrackingNumberWithoutRelations(trackingNumber: string): Promise<Shipment> {
+    return await this.shipmentRepository.findOne({
+      where: {
+        trackingNumber,
+      },
+      relations: ['userAccount'],
     });
   }
 
